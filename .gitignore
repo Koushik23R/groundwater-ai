@@ -17,10 +17,15 @@ data/sample/*
 !data/raw/.gitkeep
 !data/processed/.gitkeep
 !data/sample/.gitkeep
+!data/raw/Bengaluru_dataset.csv
+!data/processed/groundwater_cleaned.csv
+!data/processed/groundwater_feature_engineered.csv
 
 # Trained models
 models/*
 !models/.gitkeep
+!models/best_model.pkl
+!models/best_model_meta.json
 
 # Environment files
 .env
