@@ -10,14 +10,19 @@ from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 
 from backend.app.model_service import get_model_name, get_model_features, predict_groundwater_level
+from backend.app.recharge_service import (
+    get_recharge_summary,
+    get_recharge_stations,
+    get_station_recharge,
+)
 from backend.app.schemas import PredictionRequest
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 app = FastAPI(
     title="Groundwater Depletion & Recharge API",
-    version="0.2.0",
-    description="Academic project backend for groundwater depletion prediction and later recharge analysis.",
+    version="0.3.0",
+    description="Academic project backend for groundwater depletion prediction and artificial recharge assessment.",
 )
 
 app.add_middleware(
@@ -38,14 +43,15 @@ async def root_info():
 
     return {
         "project": "Predictive Modeling of Ground Water Depletion and Artificial Recharge Potential",
-        "phase": "Phase 2 - Prediction API",
-        "api_version": "0.2.0",
+        "phase": "Phase 3 - Recharge assessment API",
+        "api_version": "0.3.0",
         "models_dir": str(models_dir),
         "model_file": str(model_file),
         "model_exists": model_exists,
         "model_name": get_model_name(),
         "feature_count": len(get_model_features()),
-        "note": "Prediction endpoint is available via POST /predict. Recharge and explainability endpoints will be added later.",
+        "recharge_artifact": "outputs/recharge/artificial_recharge_assessment.csv",
+        "note": "Prediction and recharge assessment endpoints are available. Explainability endpoints will be added later.",
     }
 
 
@@ -92,6 +98,76 @@ async def predict(request: PredictionRequest):
         "model_name": get_model_name(),
         "feature_count": len(get_model_features()),
     }
+
+
+@app.get("/recharge/summary", tags=["recharge"])
+async def recharge_summary():
+    """Return summary statistics for the rule-based artificial recharge assessment."""
+    try:
+        summary = get_recharge_summary()
+    except FileNotFoundError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail={"status": "error", "message": str(exc), "error_type": "recharge_results_missing"},
+        ) from exc
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail={"status": "error", "message": str(exc), "error_type": "malformed_recharge_data"},
+        ) from exc
+    return {
+        "status": "success",
+        "assessment_type": "artificial recharge potential assessment",
+        "total_stations": summary["total_stations"],
+        "categories": summary["categories"],
+        "average_recharge_score": summary["average_recharge_score"],
+        "min_recharge_score": summary["min_recharge_score"],
+        "max_recharge_score": summary["max_recharge_score"],
+        "methodology_note": "This is a decision-support potential assessment derived from rule-based station conditions; it is not measured recharge.",
+    }
+
+
+@app.get("/recharge/stations", tags=["recharge"])
+async def recharge_stations():
+    """Return all station-level recharge potential results."""
+    try:
+        stations = get_recharge_stations()
+    except FileNotFoundError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail={"status": "error", "message": str(exc), "error_type": "recharge_results_missing"},
+        ) from exc
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail={"status": "error", "message": str(exc), "error_type": "malformed_recharge_data"},
+        ) from exc
+    return {"status": "success", "stations": stations}
+
+
+@app.get("/recharge/stations/{station_id}", tags=["recharge"])
+async def recharge_station_detail(station_id: str):
+    """Return a single station's recharge assessment details."""
+    try:
+        station = get_station_recharge(station_id)
+    except FileNotFoundError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail={"status": "error", "message": str(exc), "error_type": "recharge_results_missing"},
+        ) from exc
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail={"status": "error", "message": str(exc), "error_type": "malformed_recharge_data"},
+        ) from exc
+
+    if station is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail={"status": "error", "message": f"Station '{station_id}' was not found in the recharge assessment results.", "error_type": "station_not_found"},
+        )
+
+    return {"status": "success", "station": station}
 
 
 if __name__ == "__main__":
