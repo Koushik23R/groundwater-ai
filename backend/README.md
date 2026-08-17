@@ -4,6 +4,7 @@ This FastAPI backend currently supports:
 - Phase 1: health and API info endpoints
 - Phase 2: groundwater prediction using the saved model
 - Phase 3: artificial recharge potential assessment results from Notebook 10
+- Phase 4: model explainability results from Notebook 11
 
 How to run (development):
 
@@ -20,14 +21,18 @@ How to run (development):
 
 API endpoints:
 
-- GET /                     -> Project and API info
-- GET /health               -> Health check with timestamp
-- POST /predict             -> Groundwater level prediction using the saved trained model
-- GET /recharge/summary     -> Overall recharge potential summary
-- GET /recharge/stations    -> List of all station-level recharge results
-- GET /recharge/stations/{station_id} -> Single station recharge assessment details
+- GET /                                                -> Project and API info
+- GET /health                                          -> Health check with timestamp
+- POST /predict                                        -> Groundwater level prediction using the saved trained model
+- GET /recharge/summary                                -> Overall recharge potential summary
+- GET /recharge/stations                               -> List of all station-level recharge results
+- GET /recharge/stations/{station_id}                  -> Single station recharge assessment details
+- GET /explainability/summary                          -> Explainability summary and available methods
+- GET /explainability/feature-importance               -> Coefficient-based feature importance results
+- GET /explainability/permutation-importance           -> Permutation importance results
 
 Notes:
 - The recharge endpoints use the reusable CSV artifact generated from Notebook 10 logic: outputs/recharge/artificial_recharge_assessment.csv
-- This assessment is a decision-support artificial recharge potential score, not measured recharge.
+- The explainability endpoints use the actual CSV artifacts saved by Notebook 11 in outputs/explainability/
+- Feature importance reflects model influence within the trained model; it is not proof of physical causation.
 - Do not modify notebooks, datasets, or the trained model.
