@@ -1,6 +1,6 @@
-# Frontend
+# Frontend application
 
-This frontend is built with React and Vite for the academic groundwater project.
+This React + Vite frontend provides the project interface for the groundwater depletion and artificial recharge assessment application.
 
 ## Technology
 
@@ -12,26 +12,28 @@ This frontend is built with React and Vite for the academic groundwater project.
 ## Install dependencies
 
 ```bash
-cd frontend
+cd /workspaces/groundwater-ai/frontend
 npm install
 ```
 
-## Start the frontend
+## Run in development mode
 
 ```bash
-cd frontend
-npm run dev -- --host 0.0.0.0
+cd /workspaces/groundwater-ai/frontend
+npm run dev -- --host 0.0.0.0 --port 5173
 ```
 
-The app is expected to run at:
+The app runs at:
 
 - http://127.0.0.1:5173
 
-## Backend URL during development
+## Backend connection
 
 The frontend connects to the FastAPI backend at:
 
 - http://127.0.0.1:8000
+
+Make sure the backend is running before using the API-powered pages.
 
 ## Available pages
 
@@ -43,5 +45,8 @@ The frontend connects to the FastAPI backend at:
 
 ## Notes
 
-- The backend should be running for API-powered functionality.
-- The current implementation provides the project foundation and placeholder pages for later dashboard and analytics work.
+- The Home page checks backend connectivity and displays project summary information.
+- The Prediction page submits to POST /predict using the model metadata contract.
+- The Recharge page uses the project recharge assessment endpoints.
+- The Explainability page displays coefficient and permutation importance from the real backend responses.
+- The About page explains the project workflow and responsible interpretation.

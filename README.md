@@ -1,124 +1,241 @@
-# Groundwater AI
-
-This repository contains the machine learning workflow for groundwater level prediction in Bengaluru. The project focuses on data cleaning, exploratory analysis, feature engineering, model comparison, evaluation, and a reusable prediction pipeline for forecasting groundwater depth at monitoring stations.
-
-This is the ML phase of the project only. The frontend, backend, APIs, and deployment work are intentionally left for future development.
+# Predictive Modeling of Ground Water Depletion and Artificial Recharge Potential
 
 ## Project overview
 
-The goal is to build a reliable predictive model for groundwater levels using historical station observations, temporal features, and spatial metadata. The workflow starts from raw monitoring data, performs cleaning and validation, creates engineered features, compares candidate regression models, and saves the best-performing model for reuse.
+This repository contains a complete academic groundwater AI project focused on predicting groundwater depletion and assessing artificial recharge potential. It includes the full machine learning workflow, a FastAPI backend, and a React + Vite frontend application for exploring project outputs and interacting with the trained model.
 
-## Objectives
+## Problem statement and motivation
 
-- Explore and validate the groundwater monitoring dataset.
-- Clean duplicate, missing, and invalid observations.
-- Understand temporal and station-wise patterns.
-- Engineer features that capture seasonality, lag, and spatial context.
-- Compare baseline and advanced regression models.
-- Save the best model and use it in a reusable prediction pipeline.
+Groundwater resources are vital for water security, and understanding depletion patterns is important for planning and sustainable management. This project develops a predictive modeling workflow for groundwater levels using historical data, engineered temporal and spatial features, and a saved trained regression model. It also includes an artificial recharge potential assessment and model explainability analysis to help interpret model behavior.
 
-## Dataset
+## Main objectives
 
-The raw dataset is stored in:
+- Explore and clean groundwater monitoring data from the project dataset.
+- Engineer relevant features for temporal, lag, rolling, and cyclical behavior.
+- Train and compare candidate regression models.
+- Save the selected model and metadata for reuse in a production-style application.
+- Provide a prediction API for groundwater level estimation.
+- Provide a recharge assessment API that presents artificial recharge potential by station.
+- Provide explainability results for coefficient-based and permutation-based feature importance.
+- Deliver a simple web frontend for project review and exploration.
 
-- data/raw/Bengaluru_dataset.csv
+## High-level workflow
 
-The processed datasets used in the notebooks are stored in:
+1. Data exploration and preprocessing
+2. Exploratory data analysis
+3. Feature engineering
+4. Baseline model development
+5. Model training and comparison
+6. Model evaluation
+7. Spatial analysis
+8. Prediction pipeline
+9. Artificial recharge assessment
+10. Model explainability
 
-- data/processed/groundwater_cleaned.csv
-- data/processed/groundwater_feature_engineered.csv
+## Selected model
 
-The dataset contains groundwater measurements from multiple monitoring stations with metadata such as station name, coordinates, timestamp, and RL_MSL values.
-
-## Workflow
-
-1. Data Exploration
-2. Data Cleaning and Preprocessing
-3. Exploratory Data Analysis
-4. Feature Engineering
-5. Baseline Model
-6. Model Training and Comparison
-7. Model Evaluation
-8. Spatial Analysis
-9. Prediction Pipeline
-
-## Feature engineering
-
-Feature engineering includes station-based identifiers, temporal attributes, lag features, rolling statistics, and cyclical encodings for time-based patterns. These features help the model capture both short-term fluctuations and recurring seasonal behavior.
-
-## Models
-
-The project compares multiple regression approaches including:
+The saved project metadata confirms the selected model is:
 
 - Linear Regression
-- Random Forest Regressor
-- XGBoost Regressor
 
-The best-performing model is saved to the models folder for later reuse.
+The model artifact and metadata are stored in:
 
-## Evaluation
+- models/best_model.pkl
+- models/best_model_meta.json
 
-Model performance is evaluated using:
-
-- Mean Absolute Error (MAE)
-- Root Mean Squared Error (RMSE)
-- R-squared (R²)
-
-The comparison is carried out on a chronological train/test split to preserve the time-series structure of the data.
-
-## Prediction pipeline
-
-The prediction pipeline loads the engineered dataset, prepares the feature matrix, loads the saved best model, and produces groundwater predictions for new feature rows. This keeps the workflow reusable without retraining the model unnecessarily.
-
-## Folder structure
+## Repository structure
 
 ```text
 groundwater-ai/
-├── backend/                  # Future backend work; placeholder only
-├── config/                   # Project configuration files
+├── backend/
+│   ├── app/
+│   ├── README.md
+│   └── requirements.txt
 ├── data/
 │   ├── raw/
-│   ├── processed/               
-├── docs/                     # Documentation and notes
-├── frontend/                 # Future frontend work; placeholder only
+│   ├── processed/
+│   └── sample/
+├── frontend/
+│   ├── src/
+│   ├── package.json
+│   ├── README.md
+│   └── vite.config.js
 ├── models/
 │   ├── best_model.pkl
 │   └── best_model_meta.json
 ├── notebooks/
-├── src/
-├── tests/
+├── outputs/
+│   ├── explainability/
+│   └── recharge/
 ├── .gitignore
 ├── LICENSE
 ├── README.md
 ├── requirements.txt
-└── .venv/                   # Local environment, not committed
+└── backend/requirements.txt
 ```
 
-## Installation
+## Machine learning workflow summary
 
-1. Clone the repository.
-2. Create a virtual environment.
-3. Install dependencies:
+The notebooks implement the project pipeline for:
+
+- data exploration
+- data cleaning and preprocessing
+- exploratory data analysis
+- feature engineering
+- baseline modeling
+- model training and comparison
+- model evaluation
+- spatial analysis
+- prediction pipeline
+- artificial recharge assessment
+- model explainability
+
+The trained model is saved and reused by the backend and frontend rather than retrained during application use.
+
+## Backend overview
+
+The backend is implemented in FastAPI and serves:
+
+- project metadata and health checks
+- groundwater prediction using the saved trained model
+- recharge assessment data and station detail
+- explainability summary, coefficient importance, and permutation importance
+
+## Frontend overview
+
+The frontend is a React + Vite application with routes for:
+
+- Home
+- Prediction
+- Recharge Assessment
+- Explainability
+- About
+
+The UI is designed to be readable, responsive, and suitable for academic project demonstration.
+
+## Main application features
+
+- Groundwater prediction from the saved model using the required feature contract
+- Artificial recharge potential assessment overview and station-level results
+- Model explainability using coefficient and permutation importance results
+- Summary cards and data-driven page elements from live backend APIs
+- Responsive academic project interface with project documentation and interpretation notes
+
+## API overview
+
+The active project endpoints are:
+
+- GET /
+- GET /health
+- POST /predict
+- GET /recharge/summary
+- GET /recharge/stations
+- GET /recharge/stations/{station_id}
+- GET /explainability/summary
+- GET /explainability/feature-importance
+- GET /explainability/permutation-importance
+
+The frontend calls these endpoints from the central API service in frontend/src/services/api.js.
+
+## Installation and setup
+
+### Backend
 
 ```bash
+cd /workspaces/groundwater-ai
+python -m venv .venv
+source .venv/bin/activate
+pip install -r backend/requirements.txt
 pip install -r requirements.txt
 ```
 
-## Requirements
+Start the backend:
 
-The project dependencies are listed in `requirements.txt`.
+```bash
+cd /workspaces/groundwater-ai
+source .venv/bin/activate
+uvicorn backend.app.main:app --reload --host 127.0.0.1 --port 8000
+```
 
-## Results
+Health check:
 
-The workflow identifies the best model using the engineered dataset and stores the trained artifact in the models directory. The saved pipeline supports consistent groundwater forecasting and future model reuse.
+```bash
+curl http://127.0.0.1:8000/health
+```
 
-## Future work
+### Frontend
 
-Planned work beyond this ML phase includes:
+```bash
+cd /workspaces/groundwater-ai/frontend
+npm install
+```
 
-- API and backend services
-- Frontend dashboard and reporting
-- Deployment and monitoring
-- Operational data ingestion and retraining workflows
+Start the frontend in development mode:
 
-This repository intentionally keeps those areas separate so the core machine learning work remains focused and clean.
+```bash
+cd /workspaces/groundwater-ai/frontend
+npm run dev -- --host 0.0.0.0 --port 5173
+```
+
+Production build:
+
+```bash
+cd /workspaces/groundwater-ai/frontend
+npm run build
+```
+
+## Expected local URLs
+
+- Frontend: http://127.0.0.1:5173
+- Backend: http://127.0.0.1:8000
+
+Run backend and frontend in separate terminals during local development.
+
+## Prediction workflow
+
+The prediction flow uses the saved trained model and the model metadata contract defined in models/best_model_meta.json. The frontend prepares the required numeric fields, including derived temporal and cyclical features such as weekday, week-of-year, quarter, and trig-encoded time values before submitting to POST /predict.
+
+## Recharge assessment workflow
+
+The recharge module presents the project&apos;s artificial recharge potential assessment results. These outputs are based on the project&apos;s rule-based assessment methodology and are intended as relative recharge potential indicators rather than directly measured recharge quantities.
+
+## Explainability workflow
+
+The explainability module presents real backend results from:
+
+- coefficient-based feature importance
+- permutation importance
+- SHAP visual artifacts generated during project analysis where they are available in outputs/explainability/
+
+Explainability is interpreted as model influence and trained-model behavior, not proof of physical causation.
+
+## Technology stack
+
+This project uses the following verified technologies:
+
+- Python
+- FastAPI
+- React
+- Vite
+- JavaScript
+- scikit-learn
+- XGBoost
+- Pandas
+- NumPy
+- Matplotlib
+- Seaborn
+- Jupyter
+- SHAP visual artifacts generated during analysis
+
+## Scientific limitations and responsible interpretation
+
+This project is designed as an academic AI and decision-support workflow. Important limitations include:
+
+- Predictions depend on the saved trained model, engineered feature representation, and project dataset context.
+- Recharge outputs represent a rule-based artificial recharge potential assessment and are not measured recharge values.
+- Explainability results reflect model influence within the trained model and should not be interpreted as proof of physical causation.
+- Results should be interpreted alongside domain knowledge and the project methodology rather than treated as standalone scientific proof.
+
+## Project status
+
+The project is functionally complete for the academic ML, backend, and frontend workflow described above. The repository is ready for local verification, demonstration, and continuation under the project&apos;s current methodology and data artifacts.

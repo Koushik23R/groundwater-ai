@@ -1,38 +1,65 @@
-Backend for the "Predictive Modeling of Ground Water Depletion and Artificial Recharge Potential" project.
+# Backend for the groundwater AI project
 
-This FastAPI backend currently supports:
-- Phase 1: health and API info endpoints
-- Phase 2: groundwater prediction using the saved model
-- Phase 3: artificial recharge potential assessment results from Notebook 10
-- Phase 4: model explainability results from Notebook 11
+This FastAPI backend serves the completed project API for the groundwater depletion and recharge assessment workflow.
 
-How to run (development):
+## Included functionality
 
-1. Create a virtual environment and install dependencies:
+- Project metadata at GET /
+- Health check at GET /health
+- Groundwater prediction at POST /predict using the saved model and metadata-driven feature order
+- Artificial recharge potential overview and station results
+- Explainability summary and numerical importance results from the saved project artifacts
 
-   python -m venv .venv
-   source .venv/bin/activate
-   pip install -r backend/requirements.txt
-   pip install -r requirements.txt
+## Setup
 
-2. Run the app:
+```bash
+cd /workspaces/groundwater-ai
+python -m venv .venv
+source .venv/bin/activate
+pip install -r backend/requirements.txt
+pip install -r requirements.txt
+```
 
-   uvicorn backend.app.main:app --reload --host 127.0.0.1 --port 8000
+## Run the backend
 
-API endpoints:
+```bash
+cd /workspaces/groundwater-ai
+source .venv/bin/activate
+uvicorn backend.app.main:app --reload --host 127.0.0.1 --port 8000
+```
 
-- GET /                                                -> Project and API info
-- GET /health                                          -> Health check with timestamp
-- POST /predict                                        -> Groundwater level prediction using the saved trained model
-- GET /recharge/summary                                -> Overall recharge potential summary
-- GET /recharge/stations                               -> List of all station-level recharge results
-- GET /recharge/stations/{station_id}                  -> Single station recharge assessment details
-- GET /explainability/summary                          -> Explainability summary and available methods
-- GET /explainability/feature-importance               -> Coefficient-based feature importance results
-- GET /explainability/permutation-importance           -> Permutation importance results
+## Active API endpoints
 
-Notes:
-- The recharge endpoints use the reusable CSV artifact generated from Notebook 10 logic: outputs/recharge/artificial_recharge_assessment.csv
-- The explainability endpoints use the actual CSV artifacts saved by Notebook 11 in outputs/explainability/
-- Feature importance reflects model influence within the trained model; it is not proof of physical causation.
-- Do not modify notebooks, datasets, or the trained model.
+- GET /
+  - Returns project metadata, model availability, and artifact paths.
+
+- GET /health
+  - Returns backend health status with a timestamp.
+
+- POST /predict
+  - Uses the trained model and the exact feature contract defined in models/best_model_meta.json.
+  - The 21-feature payload must match the saved metadata order exactly.
+
+- GET /recharge/summary
+  - Returns summary statistics for the artificial recharge potential assessment.
+
+- GET /recharge/stations
+  - Returns all recharge assessment station records.
+
+- GET /recharge/stations/{station_id}
+  - Returns a single station&apos;s recharge assessment details.
+
+- GET /explainability/summary
+  - Returns summary information about model explainability methods and artifact availability.
+
+- GET /explainability/feature-importance
+  - Returns the coefficient-based importance results from the saved explainability artifact.
+
+- GET /explainability/permutation-importance
+  - Returns permutation-importance results from the saved artifact.
+
+## Scientific notes
+
+- Recharge endpoints represent the project&apos;s artificial recharge potential assessment, not measured recharge.
+- Explainability outputs describe model influence and behavior in the trained model, not physical causation.
+- Do not modify notebooks, datasets, model artifacts, or explainability methodology.
