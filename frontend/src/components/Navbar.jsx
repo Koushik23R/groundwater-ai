@@ -13,9 +13,9 @@ function Navbar() {
     <header className="site-header">
       <div className="brand-block">
         <span className="brand-mark">GW</span>
-        <div>
+        <div className="brand-copy">
           <p className="brand-title">Groundwater AI</p>
-          <p className="brand-subtitle">Academic project</p>
+          <p className="brand-subtitle">Academic project dashboard</p>
         </div>
       </div>
 
@@ -24,6 +24,7 @@ function Navbar() {
           <NavLink
             key={item.to}
             to={item.to}
+            end={item.to === '/'}
             className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}
           >
             {item.label}
